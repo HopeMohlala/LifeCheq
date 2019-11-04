@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>calculator</title>
+<div class="jumbotron text-center">
+    <h1>The Home Loan Calculator</h1>
+</div>
+<style type="text/css"> 
+    body {margin: 30px;} 
+    </style> <!--style for text--> 
+     
+   
+
+    
+   
+</head>
+<body>
+    <!--This section does calculations from the input received from user into the form-->
+            <script>
+                    function HomeLoanPayment(){
+                    
+                        var price = document.getElementById("PurchasePrice").value;
+                        var depositPaid = document.getElementById("TotalDeposit").value;
+                        var term = document.getElementById("LoanTerm").value;
+                        var terminMonths=term*12;
+                        var intRate = document.getElementById("InterestRate").value;
+                        var intMonthly =(intRate/100)/12;
+                        var payment = ((intMonthly*(price-depositPaid))/(1-(Math.pow((1+intMonthly), (-1*terminMonths))))).toFixed(2);
+                        payment = payment.toString();
+                    document.getElementById("final").innerHTML = "Monthly payment is R"+payment;
+                    
+                    }
+            </script>
+   
+    
+<!--This section takes input from the user-->
+<form method ="post" id >
+    <p>Purchase Price: R<input type="number" id="PurchasePrice" onchange="HomeLoanPayment()"></p>
+    <p>Total Deposit: R<input type="number" id="TotalDeposit" onchange="HomeLoanPayment()"></p>
+    <p>Loan Term(Years): <input type="number" id="LoanTerm" onchange="HomeLoanPayment()"></p>
+    <p>Interest Rate(percentage%) <input type="number" id="InterestRate" onchange="HomeLoanPayment()">%</p>
+   
+</form>
+
+<font color ="red">Press 'enter' on your keyboard after inserting all fields</font>
+<h4 id="final"></h4> <!--this line is the output i.e monthly payment-->
+
+<!--On this section i was trying to get to save the data in a database but the PC i am working on does not allow me to install SQL as it is a school PC-->
+<script>
+function DataSaver(){
+    var xmlhttp;
+    xmlhttp = new XMLHttpRequest();
+    xmlhttp.open("GET","insert.php?nn"+document.getElementById("purchprice").value, false);
+    xmlhttp.send(null);
+}
+</script>
+<!--This section is the creation of the table of interests and capital-->
+<h2>Interest & Capital</h2>
+<p>Year  Interest  Capital</p>
+<table id="myTable" border="1"> 
+    <tr>
+        <td>Year</td>
+        <td>Interest%</td>
+        <td>Capital%</td>
+    </tr>
+</table>
+<script>
+function AddTable()
+{
+rn = document.getElementById("LoanTerm").value;
+cn = 3;
+  
+ for(var r=0;r<parseInt(rn,10);r++)
+  {
+   var x=document.getElementById('myTable').insertRow(r);
+   for(var c=0;c<parseInt(cn,10);c++)  
+    {
+     var y=  x.insertCell(c);
+   
+     var termhere = document.getElementById("LoanTerm").value;
+     var realterm = termhere*12;
+     var depo = document.getElementById("TotalDeposit").value;
+     var purchprice = document.getElementById("PurchasePrice").value;
+     
+     if(c==0){
+       y.innerHTML="Year " + (r+1);  
+     }
+     else if(c==1){
+         y.innerHTML=((1/realterm)*(r+1)).toFixed(3);
+     }
+     /*under the following else id statement, i was attempting to create calculations for the 3rd row but the code was not doing what had anticipated. so the third row for capital does not show*/
+     else  if(c===3){
+        y.innerHTML=(depo+(((purchprice-depo)/(timehere))*(r+1)));
+     }
+     
+
+    }
+   }
+}
+
+function graph () {
+	
+    var chart = new CanvasJS.Chart("chartContainer", {
+        animationEnabled: true,
+        
+        title:{
+            text:"Bar Graph"
+        },
+        
+        axisX:{
+            interval: 1
+        },
+        axisY2:{
+            interlacedColor: "rgba(1,77,101,.2)",
+            gridColor: "rgba(1,77,101,.1)",
+            title: "Parcentage overtime"
+        },
+        data: [{
+            type: "bar",
+            name: "payments",
+            axisYType: "secondary",
+            color: "#014D65",
+            
+            dataPoints: [
+                { y: (1/(12*LoanTerm)), label: "year"+(LoanTerm-(LoanTerm-1)) },
+               
+            ]
+        }]
+    });
+    chart.render();
+     
+    }                        
+</script>
+<table>
+   <tr>
+       <td><input type="button" id="createtable" value ="Table of Interests" onclick= "AddTable(); graph()"></td><!--table of interest and capital payments review button-->
+       <td><input type="button" id="submitform" value ="Save Calculation" onclick= "DataSaver() "></td><!--data saver button-->
+    </tr>  
+</table>
+</body>
+</html>
